@@ -82,6 +82,6 @@ if __name__ == '__main__':
     chats = messages.getAllConversations()
 
     for guid in chats:
-        jinja.get_template('conversation.html').stream(guid=guid, messages=messages.getMessagesForGuid(guid)).dump(os.path.join(OUTPUT_FOLDER, guid+'.html'), encoding='utf-8')
+        jinja.get_template('conversation.html').stream(guid=guid, chat=chats[guid], messages=messages.getMessagesForGuid(guid)).dump(os.path.join(OUTPUT_FOLDER, guid+'.html'), encoding='utf-8')
 
     jinja.get_template('index.html').stream(chats=chats).dump(os.path.join(OUTPUT_FOLDER, 'index.html'), encoding='utf-8')
