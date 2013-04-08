@@ -6,7 +6,7 @@
 
 <ul>
   {% for guid, chat in chats.iteritems() %}
-  <li><a href="{{ url_for('showConversation', guid=guid) }}">{{chat.handles}}</a> ({{chat.latest_message}})</li>
+  <li><a href="{{ guid | e }}.html">{{chat.handles}}</a> ({{chat.latest_message}})</li>
   {% endfor %}
 </ul>
 

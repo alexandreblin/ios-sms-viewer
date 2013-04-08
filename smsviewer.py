@@ -1,9 +1,12 @@
-from flask import Flask, render_template
+from jinja2 import Environment, FileSystemLoader
 import datetime
 import os
+import shutil
 import sqlite3
 
-app = Flask(__name__)
+OUTPUT_FOLDER = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), 'output'))
+
+jinja = Environment(loader=FileSystemLoader('templates'))
 
 
 class MessagesDB:
@@ -69,23 +72,16 @@ class MessagesDB:
         return sorted(messages, key=lambda k: k['date'])
 
 
-@app.route('/')
-def hello():
+if __name__ == '__main__':
+    if os.path.exists(OUTPUT_FOLDER):
+        shutil.rmtree(OUTPUT_FOLDER)
+
+    os.makedirs(OUTPUT_FOLDER)
+
     messages = MessagesDB()
     chats = messages.getAllConversations()
 
-    # messages = c.execute('''
-    #     select m.ROWID, cm.chat_id, m.text, m.date, m.handle_id, m.service, m.is_from_me
-    #     from message m join chat_message_join cm on m.ROWID=cm.message_id
-    # ''').fetchall()
+    for guid in chats:
+        jinja.get_template('conversation.html').stream(guid=guid, messages=messages.getMessagesForGuid(guid)).dump(os.path.join(OUTPUT_FOLDER, guid+'.html'), encoding='utf-8')
 
-    return render_template('index.html', chats=chats)
-
-
-@app.route('/show/<guid>/')
-def showConversation(guid):
-    messages = MessagesDB()
-    return render_template('conversation.html', guid=guid, messages=messages.getMessagesForGuid(guid))
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    jinja.get_template('index.html').stream(chats=chats).dump(os.path.join(OUTPUT_FOLDER, 'index.html'), encoding='utf-8')
