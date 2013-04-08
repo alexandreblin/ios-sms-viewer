@@ -29,21 +29,9 @@ class MessagesDB:
             group by c.guid
         ''').fetchall()
 
-        chats = {}
+        chats = []
         for row in res:
-            chats[row['guid']] = {'handles': row['handles']}
-
-        res = c.execute('''
-            select c.guid, max(m.date) as latest_message
-            from chat c join chat_message_join cm on c.ROWID=cm.chat_id join message m on cm.message_id=m.ROWID
-            group by c.guid
-        ''').fetchall()
-
-        for row in res:
-            if not row['guid'] in chats:
-                continue
-
-            chats[row['guid']]['latest_message'] = row['latest_message']
+            chats.append({'guid': row['guid'], 'handles': row['handles']})
 
         return chats
 
@@ -78,10 +66,17 @@ if __name__ == '__main__':
 
     os.makedirs(OUTPUT_FOLDER)
 
-    messages = MessagesDB()
-    chats = messages.getAllConversations()
+    db = MessagesDB()
+    chats = db.getAllConversations()
 
-    for guid in chats:
-        jinja.get_template('conversation.html').stream(guid=guid, chat=chats[guid], messages=messages.getMessagesForGuid(guid)).dump(os.path.join(OUTPUT_FOLDER, guid+'.html'), encoding='utf-8')
+    messages = {}
+    for chat in chats:
+        messages[chat['guid']] = db.getMessagesForGuid(chat['guid'])
+        chat['msg_count'] = len(messages[chat['guid']])
+        chat['last_msg'] = messages[chat['guid']][len(messages[chat['guid']])-1]
+
+        jinja.get_template('conversation.html').stream(guid=chat['guid'], chat=chat, messages=messages[chat['guid']]).dump(os.path.join(OUTPUT_FOLDER, chat['guid']+'.html'), encoding='utf-8')
+
+    chats = sorted(chats, key=lambda k: k['last_msg']['date'], reverse=True)
 
     jinja.get_template('index.html').stream(chats=chats).dump(os.path.join(OUTPUT_FOLDER, 'index.html'), encoding='utf-8')

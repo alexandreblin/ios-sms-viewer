@@ -5,8 +5,11 @@
 <h1>Chats</h1>
 
 <ul>
-  {% for guid, chat in chats.iteritems() %}
-  <li><a href="{{ guid | e }}.html">{{chat.handles}}</a> ({{chat.latest_message}})</li>
+  {% for chat in chats %}
+  <li>
+  	<a href="{{ chat.guid | e }}.html">{{chat.handles}}</a> ({{chat.msg_count}})<br>
+  	{{chat.last_msg.text}}
+  </li>
   {% endfor %}
 </ul>
 
