@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>Conversation {{guid}}</h1>
+
+<ul class="unstyled">
+  {% for msg in messages %}
+  <li>
+    <strong>{% if msg.is_from_me %}Moi{% else %}{{ msg.handle }}{% endif %}</strong> ({{ msg.date.strftime('%d/%m/%Y, %H:%M GMT') }}) :<br>
+    {{ msg.text }}
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

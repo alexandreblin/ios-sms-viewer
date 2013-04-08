@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>Chats</h1>
+
+<ul>
+  {% for guid, chat in chats.iteritems() %}
+  <li><a href="{{ url_for('showConversation', guid=guid) }}">{{chat.handles}}</a> ({{chat.latest_message}})</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
