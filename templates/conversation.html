@@ -3,12 +3,59 @@
 {% block conversation %}
 <h1>Conversation with {{chat.handles}}</h1>
 
-<ul class="unstyled">
-  {% for msg in messages %}
-  <li>
-    <strong>{% if msg.is_from_me %}Moi{% else %}{{ msg.handle }}{% endif %}</strong> ({{ msg.date.strftime('%d/%m/%Y, %H:%M GMT') }}) :<br>
-    {{ msg.text }}
+<style>
+.conversation li > div {
+  position: relative;
+  display: inline-block;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px;
+}
+
+.conversation li > div.me {
+  background-color: #cdf;
+}
+
+.conversation li > div.notme {
+  background-color: #e4e4e4;
+}
+
+.conversation li > div.me:after {
+  content: '';
+  width: 15px;
+  height: 15px;
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  display: block;
+  position: absolute;
+  top: 11px;
+  right: -5px;
+  z-index: -1;
+  background: #cdf;
+}
+
+.conversation li > div.notme:after {
+  content: '';
+  width: 15px;
+  height: 15px;
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  display: block;
+  position: absolute;
+  top: 11px;
+  left: -5px;
+  z-index: -1;
+  background: #e4e4e4;
+}
+</style>
+<ul class="unstyled conversation">
+  {%- for msg in messages %}
+  <li style="{% if msg.is_from_me %}text-align: right{% endif %}">
+    <div class="{% if msg.is_from_me %}me{% else %}notme{% endif %}">
+      <strong>{% if msg.is_from_me %}Moi{% else %}{{ msg.handle }}{% endif %}</strong> ({{ msg.date.strftime('%d/%m/%Y, %H:%M GMT') }}) :<br>
+      {{ msg.text }}
+    </div>
   </li>
-  {% endfor %}
+  {%- endfor -%}
 </ul>
 {% endblock %}
