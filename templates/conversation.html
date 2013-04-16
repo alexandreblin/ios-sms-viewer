@@ -1,7 +1,6 @@
-{% extends 'layout.html' %}
+{% extends 'index.html' %}
 
-{% block content %}
-
+{% block conversation %}
 <h1>Conversation with {{chat.handles}}</h1>
 
 <ul class="unstyled">
@@ -12,5 +11,4 @@
   </li>
   {% endfor %}
 </ul>
-
 {% endblock %}

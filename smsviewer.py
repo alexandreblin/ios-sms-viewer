@@ -75,8 +75,9 @@ if __name__ == '__main__':
         chat['msg_count'] = len(messages[chat['guid']])
         chat['last_msg'] = messages[chat['guid']][len(messages[chat['guid']])-1]
 
-        jinja.get_template('conversation.html').stream(guid=chat['guid'], chat=chat, messages=messages[chat['guid']]).dump(os.path.join(OUTPUT_FOLDER, chat['guid']+'.html'), encoding='utf-8')
-
     chats = sorted(chats, key=lambda k: k['last_msg']['date'], reverse=True)
+
+    for chat in chats:
+        jinja.get_template('conversation.html').stream(chats=chats, guid=chat['guid'], chat=chat, messages=messages[chat['guid']]).dump(os.path.join(OUTPUT_FOLDER, chat['guid']+'.html'), encoding='utf-8')
 
     jinja.get_template('index.html').stream(chats=chats).dump(os.path.join(OUTPUT_FOLDER, 'index.html'), encoding='utf-8')
